@@ -6,7 +6,7 @@ import argparse
 import tensorflow as tf
 import yaml
 
-from lib.utils import load_graph_data
+from lib.utils import load_pickle
 from model.dcrnn_supervisor import DCRNNSupervisor
 
 
@@ -15,7 +15,7 @@ def main(args):
         supervisor_config = yaml.load(f)
 
         graph_pkl_filename = supervisor_config['data'].get('graph_pkl_filename')
-        sensor_ids, sensor_id_to_ind, adj_mx = load_graph_data(graph_pkl_filename)
+        adj_mx = load_pickle(graph_pkl_filename)
 
         tf_config = tf.ConfigProto()
         if args.use_cpu_only:

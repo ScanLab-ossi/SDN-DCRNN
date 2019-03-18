@@ -5,7 +5,7 @@ import sys
 import tensorflow as tf
 import yaml
 
-from lib.utils import load_graph_data
+from lib.utils import load_pickle
 from model.dcrnn_supervisor import DCRNNSupervisor
 
 
@@ -17,7 +17,7 @@ def run_dcrnn(args):
         tf_config = tf.ConfigProto(device_count={'GPU': 0})
     tf_config.gpu_options.allow_growth = True
     graph_pkl_filename = config['data']['graph_pkl_filename']
-    _, _, adj_mx = load_graph_data(graph_pkl_filename)
+    adj_mx = load_pickle(graph_pkl_filename)
     with tf.Session(config=tf_config) as sess:
         supervisor = DCRNNSupervisor(adj_mx=adj_mx, **config)
         supervisor.load(sess, config['train']['model_filename'])
