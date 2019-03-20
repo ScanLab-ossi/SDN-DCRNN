@@ -3,10 +3,10 @@ base_dir: data/model
 log_level: INFO
 data:
   batch_size: 64
-  dataset_dir: data/METR-LA
+  dataset_dir: DATASET_DIR
   test_batch_size: 64
   val_batch_size: 64
-  graph_pkl_filename: data/sensor_graph/adj_mx.pkl
+  graph_pkl_filename: GRAPH_ADJ_MX_PKL
 
 model:
   cl_decay_steps: 2000
@@ -15,7 +15,7 @@ model:
   input_dim: 2
   l1_decay: 0
   max_diffusion_step: 2
-  num_nodes: 207
+  num_nodes: NUM_PORTS
   num_rnn_layers: 2
   output_dim: 1
   rnn_units: 16
