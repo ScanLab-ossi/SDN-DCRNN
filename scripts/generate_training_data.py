@@ -10,7 +10,7 @@ import pandas as pd
 
 
 def generate_graph_seq2seq_io_data(
-        df, x_offsets, y_offsets, add_time_in_day=True
+        df, x_offsets, y_offsets, add_time_in_day=False
 ):
     """
     Generate samples from
@@ -27,8 +27,10 @@ def generate_graph_seq2seq_io_data(
     data = np.expand_dims(df.values, axis=-1)
     data_list = [data]
     if add_time_in_day:
+        # get the relative time in the day as a number in range [0,1]
         time_ind = (df.index.values - df.index.values.astype("datetime64[D]")) / np.timedelta64(1, "D")
         time_in_day = np.tile(time_ind, [1, num_nodes, 1]).transpose((2, 1, 0))
+        # add as another dimension in each sample
         data_list.append(time_in_day)
 
     data = np.concatenate(data_list, axis=-1)
@@ -62,8 +64,7 @@ def generate_train_val_test(args):
         df,
         x_offsets=x_offsets,
         y_offsets=y_offsets,
-        add_time_in_day=True,
-        add_day_in_week=False,
+        add_time_in_day=args.add_time_in_day
     )
 
     print("x shape: ", x.shape, ", y shape: ", y.shape)
@@ -106,6 +107,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--output_dir", type=str, default="data/", help="Output directory."
+    )
+    parser.add_argument(
+        "--add_time_in_day", action="store_true", help="Enable adding the time in day dimension to samples."
     )
     parser.add_argument(
         "--traffic_df_filename",
