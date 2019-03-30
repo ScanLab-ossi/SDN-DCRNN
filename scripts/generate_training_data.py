@@ -53,11 +53,10 @@ def generate_train_val_test(args):
     df = pd.read_hdf(args.traffic_df_filename)
     # 0 is the latest observed sample.
     x_offsets = np.sort(
-        # np.concatenate(([-week_size + 1, -day_size + 1], np.arange(-11, 1, 1)))
-        np.concatenate((np.arange(-11, 1, 1),))
+        np.concatenate((np.arange(-(args.horizon_len-1), 1, args.horizon_step),))
     )
     # Predict the next one hour
-    y_offsets = np.sort(np.arange(1, 13, 1))
+    y_offsets = np.sort(np.arange(1, args.horizon_len+1, args.horizon_step))
     # x: (num_samples, input_length, num_nodes, input_dim)
     # y: (num_samples, output_length, num_nodes, output_dim)
     x, y = generate_graph_seq2seq_io_data(
@@ -110,6 +109,12 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--add_time_in_day", action="store_true", help="Enable adding the time in day dimension to samples."
+    )
+    parser.add_argument(
+        "--horizon_len", type=int, default=12, help="Length of the prediction horizon."
+    )
+    parser.add_argument(
+        "--horizon_step", type=int, default=1, help="Length of the prediction horizon step."
     )
     parser.add_argument(
         "--traffic_df_filename",
