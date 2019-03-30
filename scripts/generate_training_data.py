@@ -10,7 +10,7 @@ import pandas as pd
 
 
 def generate_graph_seq2seq_io_data(
-        df, x_offsets, y_offsets, add_time_in_day=True, add_day_in_week=False, scaler=None
+        df, x_offsets, y_offsets, add_time_in_day=True
 ):
     """
     Generate samples from
@@ -18,8 +18,6 @@ def generate_graph_seq2seq_io_data(
     :param x_offsets:
     :param y_offsets:
     :param add_time_in_day:
-    :param add_day_in_week:
-    :param scaler:
     :return:
     # x: (epoch_size, input_length, num_nodes, input_dim)
     # y: (epoch_size, output_length, num_nodes, output_dim)
@@ -32,10 +30,6 @@ def generate_graph_seq2seq_io_data(
         time_ind = (df.index.values - df.index.values.astype("datetime64[D]")) / np.timedelta64(1, "D")
         time_in_day = np.tile(time_ind, [1, num_nodes, 1]).transpose((2, 1, 0))
         data_list.append(time_in_day)
-    if add_day_in_week:
-        day_in_week = np.zeros(shape=(num_samples, num_nodes, 7))
-        day_in_week[np.arange(num_samples), :, df.index.dayofweek] = 1
-        data_list.append(day_in_week)
 
     data = np.concatenate(data_list, axis=-1)
     # epoch_len = num_samples + min(x_offsets) - max(y_offsets)
