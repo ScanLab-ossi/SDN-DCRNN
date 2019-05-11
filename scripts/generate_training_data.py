@@ -25,7 +25,7 @@ def generate_graph_seq2seq_io_data(
     """
 
     num_samples, num_nodes = df.shape
-    num_samples = round(num_samples * used_percentage)
+    num_samples = int(num_samples * used_percentage)
     data = np.expand_dims(df.values, axis=-1)
     data_list = [data]
     if add_time_in_day:
@@ -74,8 +74,8 @@ def generate_train_val_test(args):
     # num_test = 6831, using the last 6831 examples as testing.
     # for the rest: 7/8 is used for training, and 1/8 is used for validation.
     num_samples = x.shape[0]
-    num_test = round(num_samples * 0.2)
-    num_train = round(num_samples * 0.7)
+    num_test = int(num_samples * 0.2)
+    num_train = int(num_samples * 0.7)
     num_val = num_samples - num_test - num_train
 
     # train
