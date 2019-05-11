@@ -10,11 +10,12 @@ import pandas as pd
 
 
 def generate_graph_seq2seq_io_data(
-        df, x_offsets, y_offsets, add_time_in_day=False
+        df, used_percentage, x_offsets, y_offsets, add_time_in_day=False
 ):
     """
     Generate samples from
     :param df:
+    :param used_percentage:
     :param x_offsets:
     :param y_offsets:
     :param add_time_in_day:
@@ -24,6 +25,7 @@ def generate_graph_seq2seq_io_data(
     """
 
     num_samples, num_nodes = df.shape
+    num_samples = round(num_samples * used_percentage)
     data = np.expand_dims(df.values, axis=-1)
     data_list = [data]
     if add_time_in_day:
@@ -61,6 +63,7 @@ def generate_train_val_test(args):
     # y: (num_samples, output_length, num_nodes, output_dim)
     x, y = generate_graph_seq2seq_io_data(
         df,
+        args.used_sample_percentage,
         x_offsets=x_offsets,
         y_offsets=y_offsets,
         add_time_in_day=args.add_time_in_day
@@ -109,6 +112,9 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--add_time_in_day", action="store_true", help="Enable adding the time in day dimension to samples."
+    )
+    parser.add_argument(
+        "--used-sample-percentage", type=float, default=1.0, help="Percentage of samples to use in analysis."
     )
     parser.add_argument(
         "--horizon_len", type=int, default=12, help="Length of the prediction horizon."
