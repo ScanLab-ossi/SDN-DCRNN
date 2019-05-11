@@ -13,7 +13,7 @@ parser.add_argument(
     "-d", "--dataset_dir", type=str, required=True, help="Dataset directory."
 )
 parser.add_argument(
-    "-p", "--graph_adj_mx_pkl", type=str, required=True, help="PKL file representing th network adjacency matrix."
+    "-p", "--graph_adj_mx_pkl", type=str, required=True, help="PKL file representing the network adjacency matrix."
 )
 parser.add_argument(
     "-n", "--num_ports", type=int, required=True, help="Number of ports in network."
@@ -30,4 +30,4 @@ data['data']['graph_pkl_filename'] = args.graph_adj_mx_pkl
 data['model']['num_nodes'] = args.num_ports
 
 with open(args.output_prefix + args.template_file, 'w') as yaml_file:
-    yaml_file.write( yaml.dump(data, default_flow_style=False))
+    yaml_file.write(yaml.dump(data, default_flow_style=False))
