@@ -30,7 +30,7 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--config_filename', type=str,
-                        help='Configuration filename for restoring the model.')
+                        help='Configuration filename for the model.')
     parser.add_argument('--use_cpu_only', default=False, type=bool, help='Set to true to only use cpu.')
     args = parser.parse_args()
     main(args)
