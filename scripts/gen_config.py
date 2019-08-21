@@ -1,5 +1,6 @@
 import yaml
 import argparse
+from os.path import basename
 
 parser = argparse.ArgumentParser()
 
@@ -29,5 +30,5 @@ data['data']['dataset_dir'] = args.dataset_dir
 data['data']['graph_pkl_filename'] = args.graph_adj_mx_pkl
 data['model']['num_nodes'] = args.num_ports
 
-with open(args.output_prefix + args.template_file, 'w') as yaml_file:
+with open(args.output_prefix + basename(args.template_file), 'w') as yaml_file:
     yaml_file.write(yaml.dump(data, default_flow_style=False))
