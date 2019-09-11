@@ -89,11 +89,16 @@ if __name__ == '__main__':
     parser.add_argument('--normalized_k', type=float, default=0.1,
                         help='Entries lower than normalized_k after normalization are set to zero for sparsity.')
     parser.add_argument('--output_pkl_filename', type=str, default='',
-                        help='Path of the output file. Default - \"links-csv\".pkl')
+                        help='Path of the pickle output file. Default - \"links-csv\".pkl')
+    parser.add_argument('--output_ports_num_filename', type=str, default='',
+                        help='Path of the ports num output file. Default - \"links-csv\".port.num')
     args = parser.parse_args()
 
     if args.output_pkl_filename == "":
         args.output_pkl_filename = args.links_csv + '.pkl'
+
+    if args.output_ports_num_filename == "":
+        args.output_ports_num_filename = args.links_csv + '.port.num'
 
     links_df = pd.read_csv(args.links_csv, dtype={'From': 'str', 'To': 'str'})
     switches = set([link[0] for link in links_df.values] + [link[1] for link in links_df.values])
@@ -101,6 +106,9 @@ if __name__ == '__main__':
     switches = sorted(switches)
 
     ports_map = get_ports_map(args.intfs_list, switches)
+
+    with open(args.output_ports_num_filename, 'w') as f:
+        f.write(str(len(ports_map)))
 
     latencies = get_latencies_map(links_df.values, switches, ports_map)
 
