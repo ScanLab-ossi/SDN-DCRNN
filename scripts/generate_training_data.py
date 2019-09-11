@@ -16,6 +16,7 @@ def make_sure_no_inf_nan(data):
     if np.isinf(data_sum):
         raise RuntimeError("data has Inf values")
 
+
 def generate_graph_seq2seq_io_data(
         df, used_percentage, x_offsets, y_offsets, add_time_in_day=False
 ):
@@ -43,8 +44,10 @@ def generate_graph_seq2seq_io_data(
         data_list.append(time_in_day)
 
     data = np.concatenate(data_list, axis=-1)
-    make_sure_no_inf_nan(data)
-    # epoch_len = num_samples + min(x_offsets) - max(y_offsets)
+    try:
+        make_sure_no_inf_nan(data)
+    except RuntimeError:
+        data = np.nan_to_num(data)
     x, y = [], []
     # t is the index of the last observation.
     min_t = abs(min(x_offsets))
@@ -115,7 +118,7 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--output_dir", type=str, default="data/", help="Output directory."
+        "--output_dir", type=str, default="data", help="Output directory."
     )
     parser.add_argument(
         "--add_time_in_day", action="store_true", help="Enable adding the time in day dimension to samples."
