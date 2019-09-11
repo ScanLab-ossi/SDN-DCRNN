@@ -1,14 +1,51 @@
 import yaml
 import argparse
-from os.path import basename
+
+default_template = """---
+base_dir: data/model
+log_level: INFO
+data:
+  batch_size: 64
+  dataset_dir: DATASET_DIR
+  test_batch_size: 64
+  val_batch_size: 64
+  graph_pkl_filename: GRAPH_ADJ_MX_PKL
+
+model:
+  cl_decay_steps: 2000
+  filter_type: dual_random_walk
+  horizon: 12
+  input_dim: 1
+  l1_decay: 0
+  max_diffusion_step: 2
+  num_nodes: NUM_PORTS
+  num_rnn_layers: 2
+  output_dim: 1
+  rnn_units: 16
+  seq_len: 12
+  use_curriculum_learning: true
+
+train:
+  base_lr: 0.01
+  dropout: 0
+  epoch: 0
+  epochs: 100
+  epsilon: 1.0e-3
+  global_step: 0
+  lr_decay_ratio: 0.1
+  max_grad_norm: 5
+  max_to_keep: 100
+  min_learning_rate: 2.0e-06
+  optimizer: adam
+  patience: 50
+  steps: [20, 30, 40, 50]
+  test_every_n_epochs: 10
+"""
 
 parser = argparse.ArgumentParser()
 
 parser.add_argument(
-    "-t", "--template_file", type=str, default="dcrnn_config_template.yaml"
-)
-parser.add_argument(
-    "-o", "--output_prefix", type=str, required=True
+    "-t", "--template_file", type=str
 )
 parser.add_argument(
     "-d", "--dataset_dir", type=str, required=True, help="Dataset directory."
@@ -21,14 +58,18 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-
-with open(args.template_file, 'r') as stream:
-    data = yaml.load(stream)
+if args.template_file is not None:
+    with open(args.template_file, 'r') as template:
+        data = yaml.load(template)
+else:
+    data = yaml.load(default_template)
 
 data['base_dir'] = args.dataset_dir
 data['data']['dataset_dir'] = args.dataset_dir
 data['data']['graph_pkl_filename'] = args.graph_adj_mx_pkl
 data['model']['num_nodes'] = args.num_ports
 
-with open(args.output_prefix + basename(args.template_file), 'w') as yaml_file:
+yaml_filename = args.graph_adj_mx_pkl.split('.')[0] + '.yaml'
+print('Outputting yaml config to ' + yaml_filename)
+with open(yaml_filename, 'w') as yaml_file:
     yaml_file.write(yaml.dump(data, default_flow_style=False))
