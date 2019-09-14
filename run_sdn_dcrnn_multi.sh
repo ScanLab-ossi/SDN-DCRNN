@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 exit_with_msg() {
   echo
   echo $1
