@@ -9,6 +9,7 @@ import pickle
 from networkx import Graph, algorithms
 from collections import namedtuple
 
+Link = namedtuple('Link', 'From_ID, From_Name, To_ID, To_Name, Latency_in_ms')
 Port = namedtuple('Port', 'Src, Dst')
 
 
@@ -50,7 +51,7 @@ def get_latencies_map(links, switches, ports):
     network = Graph()
     [network.add_node(switch) for switch in switches]
     for link in links:
-        network.add_edge(link[0], link[1], latency_in_ms=link[2])
+        network.add_edge(link.From_ID, link.To_ID, latency_in_ms=link.Latency_in_ms)
     # Fills cells in the matrix with latencies
     switch_latencies = dict(algorithms.shortest_path_length(network, weight='latency_in_ms'))
     latencies = {}
@@ -100,8 +101,9 @@ if __name__ == '__main__':
     if args.output_ports_num_filename == "":
         args.output_ports_num_filename = args.links_csv + '.port.num'
 
-    links_df = pd.read_csv(args.links_csv, dtype={'From': 'str', 'To': 'str'})
-    switches = set([link[0] for link in links_df.values] + [link[1] for link in links_df.values])
+    links_df = pd.read_csv(args.links_csv)
+    links = [Link(*link[1:]) for link in links_df.itertuples()]
+    switches = set([str(link.To_Name) for link in links] + [str(link.From_Name) for link in links])
     # make the result reproducible by making it sorted
     switches = sorted(switches)
 
@@ -110,7 +112,7 @@ if __name__ == '__main__':
     with open(args.output_ports_num_filename, 'w') as f:
         f.write(str(len(ports_map)))
 
-    latencies = get_latencies_map(links_df.values, switches, ports_map)
+    latencies = get_latencies_map(links, switches, ports_map)
 
     adj_mx = get_adjacency_matrix(latencies, sorted(ports_map.keys()), args.normalized_k)
     # Save to pickle file.
