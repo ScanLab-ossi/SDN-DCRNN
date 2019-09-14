@@ -51,7 +51,7 @@ def get_latencies_map(links, switches, ports):
     network = Graph()
     [network.add_node(switch) for switch in switches]
     for link in links:
-        network.add_edge(link.From_ID, link.To_ID, latency_in_ms=link.Latency_in_ms)
+        network.add_edge('s'+str(link.From_ID), 's'+str(link.To_ID), latency_in_ms=link.Latency_in_ms)
     # Fills cells in the matrix with latencies
     switch_latencies = dict(algorithms.shortest_path_length(network, weight='latency_in_ms'))
     latencies = {}
@@ -61,7 +61,9 @@ def get_latencies_map(links, switches, ports):
             if ports[i].Dst == ports[j].Dst:
                 curr_latencies[j] = 0
             else:
-                curr_latencies[j] = switch_latencies[ports[i].Dst][ports[j].Dst]
+                port_i_dst = ports[i].Dst
+                port_j_dst = ports[j].Dst
+                curr_latencies[j] = switch_latencies[port_i_dst][port_j_dst]
         latencies[i] = curr_latencies
 
     return latencies
@@ -103,14 +105,16 @@ if __name__ == '__main__':
 
     links_df = pd.read_csv(args.links_csv)
     links = [Link(*link[1:]) for link in links_df.itertuples()]
-    switches = set([str(link.To_Name) for link in links] + [str(link.From_Name) for link in links])
+    switches = set(['s'+str(link.To_ID) for link in links] + ['s'+str(link.From_ID) for link in links])
     # make the result reproducible by making it sorted
     switches = sorted(switches)
-
+    print("Switches found: " + str(switches))
     ports_map = get_ports_map(args.intfs_list, switches)
 
+    ports_num = str(len(ports_map))
+    print("Amount of ports found: " + ports_num)
     with open(args.output_ports_num_filename, 'w') as f:
-        f.write(str(len(ports_map)))
+        f.write(ports_num)
 
     latencies = get_latencies_map(links, switches, ports_map)
 
