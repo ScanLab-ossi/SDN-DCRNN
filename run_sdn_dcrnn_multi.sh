@@ -13,7 +13,7 @@ fi
 
 ROOT_DIR=$(dirname "${BASH_SOURCE[0]}")
 
-for EXP_DIR in `ls -d */` ; do
+for EXP_DIR in `ls -d $EXP_DATA_PATH/*/` ; do
   echo Running SDN-DCRNN for directory: $EXP_DIR
   export EXP_DIR
   "$ROOT_DIR"/run_sdn_dcrnn.sh
