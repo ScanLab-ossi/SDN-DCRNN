@@ -26,10 +26,11 @@ python scripts/gen_config.py --dataset_dir=$EXP_DIR --graph_adj_mx_pkl=$GRAPH_PK
 # dcrnn_train + config file ==> model
 CONFIG_FILE=`ls $EXP_DIR/*.yaml`
 python dcrnn_train.py --config_file=$CONFIG_FILE
-# run_demo + config file ==> new predictions
+# run_demo + trained config file ==> new predictions
 PREDICTIONS_FILE=$EXP_DIR/predictions.npz
-python run_demo.py --config_file=$CONFIG_FILE --output_filename=$PREDICTIONS_FILE
+PREDICTIONS_CONFIG_FILE=`ls -1t $EXP_DIR/dcrnn*/config*.yaml | head -n 1`
+python run_demo.py --config_file=$PREDICTIONS_CONFIG_FILE --output_filename=$PREDICTIONS_FILE
 # plot_predictions + predictions ==> plots
 PLOTS_DIR=$EXP_DIR/plots
 mkdir $PLOTS_DIR
-python scripts\plot_predictions.py --predictions-file=$PREDICTIONS_FILE --output-dir=$PLOTS_DIR
+python scripts/plot_predictions.py --predictions-file=$PREDICTIONS_FILE --output-dir=$PLOTS_DIR
