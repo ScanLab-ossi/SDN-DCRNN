@@ -47,6 +47,9 @@ if __name__ == '__main__':
         dir_error_rates = {}
         with open(pj(d, args.error_rates)) as f:
             for line in f.readlines():
+                if "Horizon" not in line:
+                    # make sure the file has the expected format
+                    break
                 split_line = line.strip().split(', ')
                 horizon_numeric = int(split_line[0].split(" ")[1])
                 mae = split_line[1].split(": ")[1]
@@ -74,7 +77,9 @@ if __name__ == '__main__':
                                                   float(rmse) / float(iqr_stats["second_means_iqr"]["result"]),
                                                   'RMSE/port_means_iqr':
                                                   float(rmse) / float(iqr_stats["port_means_iqr"]["result"])}
-        error_rates[d] = dir_error_rates
+        if len(dir_error_rates.keys()) > 0:
+            # only include rates dict if has data
+            error_rates[d] = dir_error_rates
 
     error_rates_df = pd.DataFrame.from_dict({(i, j): error_rates[i][j]
                                             for i in error_rates.keys()
