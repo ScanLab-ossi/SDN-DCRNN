@@ -20,4 +20,4 @@ for EXP_DIR in `ls -d $EXP_DATA_PATH/*/` ; do
   tail -n12 $EXP_DIR/dcrnn*/info.log | cut -d" " -f8- > $EXP_DIR/final_training_error_rates.txt
 done
 
-python $ROOT_DIR/calculate_normalized_error_rates.py --data-base-path=$EXP_DATA_PATH
+python $ROOT_DIR/scripts/calculate_normalized_error_rates.py --data-base-path=$EXP_DATA_PATH
