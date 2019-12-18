@@ -8,6 +8,7 @@
 import argparse
 import logging
 from os.path import join as pj
+from os.path import getmtime
 from glob import glob
 import json
 import pandas as pd
@@ -21,13 +22,17 @@ def parse_arguments():
                         help="Input file name - a JSON file describing the IQR")
     parser.add_argument("-e", "--error-rates", default="final_training_error_rates.txt",
                         help="Input file name - a TXT file describing the error rates found during training")
+    parser.add_argument("--start-time-file", default=pj('config', 'config-10.0.0.1'),
+                        help="The file used to establish the experiment start time")
+    parser.add_argument("--end-time-file", default='sflow-datagrams',
+                        help="The file used to establish the experiment end time")
     parser.add_argument("-o", "--output-path", default="",
-                        help="Path to output normalized data, defaults to '<data-base-path>/normalized.hd5'.")
+                        help="Path to output normalized data, defaults to '<data-base-path>/normalized.h5'.")
     parser.add_argument("-d", "--debug", action='store_true',
                         help="Set to add debug level log")
     args = parser.parse_args()
     if args.output_path == "":
-        args.output_path = pj(args.data_base_path, 'normalized.hd5')
+        args.output_path = pj(args.data_base_path, 'normalized.h5')
     return args
 
 
@@ -41,7 +46,14 @@ if __name__ == '__main__':
 
     error_rates = {}
     for d in glob(pj(args.data_base_path, "*", "")):
-        print(d)
+        # TODO: move this calculation to SDNSandbox as it is tied to the experiment error detection
+        logging.info("Processing folder %s", d)
+        duration = getmtime(pj(d, args.end_time_file)) - getmtime(pj(d, args.start_time_file))
+        if 14400 < duration < 16200:
+            logging.info("Duration is %f [Hours] as expected", duration/3600)
+        else:
+            logging.error("Duration is %f [Hours] - not as expected, SKIPPING!", duration/3600)
+            continue
         with open(pj(d, args.iqr_json)) as f:
             iqr_stats = json.load(f)
         dir_error_rates = {}
@@ -81,10 +93,13 @@ if __name__ == '__main__':
             # only include rates dict if has data
             error_rates[d] = dir_error_rates
 
+    if len(error_rates) == 0:
+        logging.fatal("No results found, quitting!")
+        exit(1)
     error_rates_df = pd.DataFrame.from_dict({(i, j): error_rates[i][j]
                                             for i in error_rates.keys()
                                             for j in error_rates[i].keys()},
                                             orient='index')
     logging.info("Dumping results to " + args.output_path)
-    logging.debug("JSON will be created from: %s", str(error_rates_df))
+    logging.debug("HDF will be created from: %s", str(error_rates_df))
     error_rates_df.to_hdf(args.output_path, key='normalized_error_rates')
