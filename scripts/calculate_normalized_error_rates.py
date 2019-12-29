@@ -48,6 +48,8 @@ if __name__ == '__main__':
     for d in glob(pj(args.data_base_path, "*", "")):
         # TODO: move this calculation to SDNSandbox as it is tied to the experiment error detection
         logging.info("Processing folder %s", d)
+        # We assume there is only one GRAPHML file per folder
+        network_name = glob(pj(d, "*.graphml"))[0].split(".")[0]
         duration = getmtime(pj(d, args.end_time_file)) - getmtime(pj(d, args.start_time_file))
         if 14400 < duration < 16200:
             logging.info("Duration is %f [Hours] as expected", duration/3600)
@@ -91,7 +93,7 @@ if __name__ == '__main__':
                                                   float(rmse) / float(iqr_stats["port_means_iqr"]["result"])}
         if len(dir_error_rates.keys()) > 0:
             # only include rates dict if has data
-            error_rates[d] = dir_error_rates
+            error_rates[(network_name, d)] = dir_error_rates
 
     if len(error_rates) == 0:
         logging.fatal("No results found, quitting!")
