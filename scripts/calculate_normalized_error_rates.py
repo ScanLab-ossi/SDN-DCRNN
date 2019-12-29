@@ -8,7 +8,7 @@
 import argparse
 import logging
 from os.path import join as pj
-from os.path import getmtime
+from os.path import getmtime, basename
 from glob import glob
 import json
 import pandas as pd
@@ -49,7 +49,7 @@ if __name__ == '__main__':
         # TODO: move this calculation to SDNSandbox as it is tied to the experiment error detection
         logging.info("Processing folder %s", d)
         # We assume there is only one GRAPHML file per folder
-        network_name = glob(pj(d, "*.graphml"))[0].split(".")[0]
+        network_name = basename(glob(pj(d, "*.graphml"))[0]).split(".")[0]
         duration = getmtime(pj(d, args.end_time_file)) - getmtime(pj(d, args.start_time_file))
         if 14400 < duration < 16200:
             logging.info("Duration is %f [Hours] as expected", duration/3600)
