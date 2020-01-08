@@ -14,7 +14,7 @@ data:
 model:
   cl_decay_steps: 2000
   filter_type: dual_random_walk
-  horizon: 12
+  horizon: HORIZON
   input_dim: 1
   l1_decay: 0
   max_diffusion_step: 2
@@ -22,7 +22,7 @@ model:
   num_rnn_layers: 2
   output_dim: 1
   rnn_units: 16
-  seq_len: 12
+  seq_len: SEQ_LEN
   use_curriculum_learning: true
 
 train:
@@ -56,6 +56,12 @@ parser.add_argument(
 parser.add_argument(
     "-n", "--num_ports", type=int, required=True, help="Number of ports in network."
 )
+parser.add_argument(
+    "--horizon", type=int, required=True, help="Number of seconds to predict forward."
+)
+parser.add_argument(
+    "--seq_len", type=int, required=True, help="Length of the sequence for input to the DCRNN algorithm."
+)
 args = parser.parse_args()
 
 if args.template_file is not None:
@@ -68,6 +74,8 @@ data['base_dir'] = args.dataset_dir
 data['data']['dataset_dir'] = args.dataset_dir
 data['data']['graph_pkl_filename'] = args.graph_adj_mx_pkl
 data['model']['num_nodes'] = args.num_ports
+data['model']['horizon'] = args.horizon
+data['model']['seq_len'] = args.seq_len
 
 yaml_filename = args.graph_adj_mx_pkl.split('.')[0] + '.yaml'
 print('Outputting yaml config to ' + yaml_filename)

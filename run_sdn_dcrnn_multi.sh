@@ -13,6 +13,14 @@ if [ -z "$EXP_DATA_PATH" ] ; then
 	exit_with_msg "The variable EXP_DATA_PATH must be set to the storage path containing data directories for analysis!"
 fi
 
+if [ -z "$HORIZON" ] ; then
+  exit_with_msg "The variable HORIZON must be set to the amount of datapoints to forecast into the future!"
+fi
+
+if [ -z "$SEQ_LEN" ] ; then
+  exit_with_msg "The variable SEQ_LEN must be set to the amount of datapoints to be used as input!"
+fi
+
 if [ -z "$PARALLEL" ] ; then
 	PARALLEL=4
 	echo "The variable PARALLEL was not set, default=$PARALLEL will be used for parallelization"
