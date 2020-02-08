@@ -24,7 +24,7 @@ predictions = ds['predictions'].transpose()
 ground_truth = ds['groundtruth'].transpose()
 
 for node in range(num_nodes):
-    fig, axes = plt.subplots(nrows=ceil(horizon_len/4), ncols=4, sharex=True, sharey=True, figsize=(15,15))
+    fig, axes = plt.subplots(nrows=ceil(horizon_len/4), ncols=4, sharex=True, sharey=True, figsize=(15, 15))
     node_predictions = predictions[node].transpose()
     node_ground_truth = ground_truth[node].transpose()
     axes_counter = 0
@@ -39,4 +39,12 @@ for node in range(num_nodes):
     fig.text(0.04, 0.5, "Prediction vs Truth", va='center', rotation='vertical')
     fig.savefig(pj(args.output_dir, "{0}-node-pred-vs-truth-plot.png".format(node)))
     plt.close(fig)
+
+    node_ground_truth = ground_truth[node].transpose()
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ax.plot(node_ground_truth[0], label='ground truth')
+    fig.savefig(pj(args.output_dir, "{0}-node-ground-truth-plot.png".format(node)))
+    plt.close(fig)
+
 
