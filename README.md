@@ -32,10 +32,20 @@ Using the following command SDN-DCRNN will analyze the experiment
 
 The `EXP_DIR` environment variable will be used to give the folder containing the input files listed above.
 
+The variable `HORIZON` must be set to the amount of datapoints to forecast into the future
+
+The variable `SEQ_LEN` must be set to the amount of datapoints to be used as input - using the same number as `HORIZON`
+is usually a good way to start
 #### Multi-Experiment Run
 We have a helper script to analyze multiple datasets:
 
 `EXP_DATA_PATH=<DIRECTORY_INCLUDING_DATASET_DIRECTORIES> run_sdn_dcrnn_multi.sh`
+
+The variable `EXP_DATA_PATH` must be set to the storage path containing data directories for analysis
+
+The variable `PARALLEL` can be used to influence parallelization of the analysis - otherwise a default will be used
+
+Other variables from the regular single experiment run can be used as well, except `EXP_DIR`
 ### Analysis Stages
 The analysis stages performed will be:
 
