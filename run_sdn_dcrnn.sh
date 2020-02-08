@@ -46,5 +46,5 @@ PREDICTIONS_CONFIG_FILE=`ls -1t $EXP_DIR/dcrnn*/config*.yaml | head -n 1`
 python run_demo.py --config_file=$PREDICTIONS_CONFIG_FILE --output_filename=$PREDICTIONS_FILE
 # plot_predictions + predictions ==> plots
 PLOTS_DIR=$EXP_DIR/plots
-mkdir $PLOTS_DIR
+mkdir -p $PLOTS_DIR
 python scripts/plot_predictions.py --predictions-file=$PREDICTIONS_FILE --output-dir=$PLOTS_DIR
