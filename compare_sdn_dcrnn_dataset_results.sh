@@ -25,3 +25,5 @@ for EXP_DIR in `ls -d $EXP_DATA_PATH/*/` ; do
 done
 
 python $ROOT_DIR/scripts/calculate_normalized_error_rates.py --data-base-path=$EXP_DATA_PATH
+
+python $ROOT_DIR/scripts/plot_normalized_error_rates.py -i=$EXP_DATA_PATH/normalized.h5

@@ -57,6 +57,11 @@ The analysis stages performed will be:
 * run_demo + config file ==> new predictions
 * plot_predictions + predictions ==> plots
 
+### Normalized Error Rates Comparison
+In order to compare different results with plots, the following helper scripts were created:
+`compare_sdn_dcrnn_dataset_results.sh`
+
+Variables `EXP_DATA_PATH`, `HORIZON` must be used as above to indicate the required way you wish to run the comparison
 #### Troubleshooting
 During training there is a chance that the training loss will explode (become too high and overflow).
 
