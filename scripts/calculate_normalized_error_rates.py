@@ -22,6 +22,8 @@ def parse_arguments():
                         help="Input file name - a JSON file describing the IQR")
     parser.add_argument("-e", "--error-rates", default="final_training_error_rates.txt",
                         help="Input file name - a TXT file describing the error rates found during training")
+    parser.add_argument("--valid-experiment-length-in-hours", default=4,
+                        help="The valid experiment length, will be used with a relaxed range of [1,1.5]")
     parser.add_argument("--start-time-file", default=pj('config', 'config-10.0.0.1'),
                         help="The file used to establish the experiment start time")
     parser.add_argument("--end-time-file", default='sflow-datagrams',
@@ -51,7 +53,7 @@ if __name__ == '__main__':
         # We assume there is only one GRAPHML file per folder
         network_name = basename(glob(pj(d, "*.graphml"))[0]).split(".")[0]
         duration = getmtime(pj(d, args.end_time_file)) - getmtime(pj(d, args.start_time_file))
-        if 14400 < duration < 16200:
+        if args.valid_experiment_length_in_hours <= duration <= args.valid_experiment_length_in_hours*1.5:
             logging.info("Duration is %f [Hours] as expected", duration/3600)
         else:
             logging.error("Duration is %f [Hours] - not as expected, SKIPPING!", duration/3600)
