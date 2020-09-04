@@ -15,7 +15,7 @@ They can be easily installed using the following command:
 ```bash
 pip install -r requirements.txt
 ```
-
+If this is an issue (to do with python package management), you can use a virtualenv python environment.
 ## Dataset Preparation
 We assume the data format used is a folder of an experiment simulated using
 [SDNSandbox](https://www.github.com/yossisolomon/SDNSandbox "SDNSanbox's Github page") - an SDN testbed for researchers.
@@ -28,7 +28,7 @@ The main inputs from the experiment folder are:
 ## Running SDN-DCRNN
 Using the following command SDN-DCRNN will analyze the experiment
 
-`EXP_DIR=<EXP_DIR> run_sdn_dcrnn.sh`
+`EXP_DIR=<EXP_DIR> ./run_sdn_dcrnn.sh`
 
 The `EXP_DIR` environment variable will be used to give the folder containing the input files listed above.
 
@@ -39,7 +39,7 @@ is usually a good way to start
 #### Multi-Experiment Run
 We have a helper script to analyze multiple datasets:
 
-`EXP_DATA_PATH=<DIRECTORY_INCLUDING_DATASET_DIRECTORIES> run_sdn_dcrnn_multi.sh`
+`EXP_DATA_PATH=<DIRECTORY_INCLUDING_DATASET_DIRECTORIES> ./run_sdn_dcrnn_multi.sh`
 
 The variable `EXP_DATA_PATH` must be set to the storage path containing data directories for analysis
 
