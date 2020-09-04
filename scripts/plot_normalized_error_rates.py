@@ -80,7 +80,9 @@ if __name__ == '__main__':
 
     error_rates_df = pd.read_hdf(args.input_hdf, key='normalized_error_rates')
     experiment_list = [key[0] for key in list(error_rates_df.index.levels[0])]
+    logging.info("Experiments = %s", experiment_list)
     horizon_list = [name for (name, _) in error_rates_df.groupby(level=1)]
+    logging.info("Horizons = %s", horizon_list)
     save_error_to_experiment_figures(error_rates_df, experiment_list, horizon_list,
                                      args.output_path, "Normalized-{}-to-experiment.png")
 
