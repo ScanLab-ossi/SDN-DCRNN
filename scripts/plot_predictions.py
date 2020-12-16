@@ -166,7 +166,9 @@ if __name__ == '__main__':
     data_set = np.load(args.predictions_file)
 
     horizons_len = data_set['predictions'].shape[0]
+    logging.info("Will produce %d horizons", horizons_len)
     num_nodes = data_set['predictions'].shape[2]
+    logging.info("Will produce results for %d nodes", num_nodes)
 
     predictions = data_set['predictions'].transpose()
     ground_truth = data_set['groundtruth'].transpose()
@@ -178,7 +180,7 @@ if __name__ == '__main__':
     relaxed_passing_threshold_incidents_per_node = {}
     node_sums = {}
     for node in range(num_nodes):
-        logging.info("Processing node #" + str(node))
+        logging.info("Processing node #%d", node)
         node_ground_truth = ground_truth[node].transpose()
         node_sums[node] = node_ground_truth.sum()
 
