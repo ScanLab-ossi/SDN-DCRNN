@@ -18,7 +18,7 @@ def make_sure_no_inf_nan(data):
 
 
 def generate_graph_seq2seq_io_data(
-        df, used_percentage, x_offsets, y_offsets, add_time_in_day=False
+        df: pd.DataFrame, used_percentage, x_offsets, y_offsets, period_cycle_seconds=None
 ):
     """
     Generate samples from
@@ -26,7 +26,7 @@ def generate_graph_seq2seq_io_data(
     :param used_percentage:
     :param x_offsets:
     :param y_offsets:
-    :param add_time_in_day:
+    :param period_cycle_seconds:
     :return:
     # x: (epoch_size, input_length, num_nodes, input_dim)
     # y: (epoch_size, output_length, num_nodes, output_dim)
@@ -36,12 +36,13 @@ def generate_graph_seq2seq_io_data(
     num_samples = int(num_samples * used_percentage)
     data = np.expand_dims(df.values, axis=-1)
     data_list = [data]
-    if add_time_in_day:
-        # get the relative time in the day as a number in range [0,1]
-        time_ind = (df.index.values - df.index.values.astype("datetime64[D]")) / np.timedelta64(1, "D")
-        time_in_day = np.tile(time_ind, [1, num_nodes, 1]).transpose((2, 1, 0))
+    if period_cycle_seconds:
+        # get the relative time in the cycle as a number
+        time_since_beginning = df.index.values - df.index.values[0]
+        time_in_cycle = time_since_beginning / np.timedelta64(period_cycle_seconds, "s")
+        time_dimension = np.tile(time_in_cycle, [1, num_nodes, 1]).transpose((2, 1, 0))
         # add as another dimension in each sample
-        data_list.append(time_in_day)
+        data_list.append(time_dimension)
 
     data = np.concatenate(data_list, axis=-1)
     try:
@@ -64,6 +65,8 @@ def generate_graph_seq2seq_io_data(
 
 def generate_train_val_test(args):
     df = pd.read_hdf(args.traffic_df_filename)
+    if df is not pd.DataFrame:
+        raise RuntimeError("Got an object that isn't a DataFrame from HDF!")
     # 0 is the latest observed sample.
     x_offsets = np.sort(
         np.concatenate((np.arange(-(args.horizon_len-1), 1, args.horizon_step),))
@@ -77,7 +80,7 @@ def generate_train_val_test(args):
         args.used_sample_percentage,
         x_offsets=x_offsets,
         y_offsets=y_offsets,
-        add_time_in_day=args.add_time_in_day
+        period_cycle_seconds=args.period_cycle_seconds
     )
 
     print("x shape: ", x.shape, ", y shape: ", y.shape)
@@ -121,7 +124,9 @@ if __name__ == "__main__":
         "--output_dir", type=str, default="data", help="Output directory."
     )
     parser.add_argument(
-        "--add_time_in_day", action="store_true", help="Enable adding the time in day dimension to samples."
+        "--period-cycle-seconds",
+        help="Set the time length of the load period cycle in seconds (will be used as modulo)."
+             "If set, this will add another dimension to samples."
     )
     parser.add_argument(
         "--used-sample-percentage", type=float, default=1.0, help="Percentage of samples to use in analysis."
