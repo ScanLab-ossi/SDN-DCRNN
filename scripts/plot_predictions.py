@@ -11,10 +11,10 @@ from copy import deepcopy
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "-p", "--predictions-file", type=str, default="DCRNN npz file"
+        "-p", "--predictions-file", type=str, help="DCRNN npz file"
     )
     parser.add_argument(
-        "-o", "--output-dir", type=str, default="Output directory for PNG figures."
+        "-o", "--output-dir", type=str, help="Output directory for PNG figures."
     )
     parser.add_argument(
         "-t", "--thresholds", type=float, nargs='+', default=[0.2, 0.3, 0.4, 0.5, 0.6], help="Thresholds list."
