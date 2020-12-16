@@ -14,6 +14,10 @@ if [ -z "$EXP_DIR" ] ; then
   exit_with_msg "The variable EXP_DIR must be set to the name of the folder containing the experiment files!"
 fi
 
+if [ -z "$EXP_FILE" ] ; then
+  exit_with_msg "The variable EXP_FILE must be set to the name of the file containing the experiment HD5!"
+fi
+
 if [ -z "$HORIZON" ] ; then
   exit_with_msg "The variable HORIZON must be set to the amount of datapoints to forecast into the future!"
 fi
@@ -24,13 +28,13 @@ fi
 
 # generate_training_data + HD5 ==> data npz
 if [ -z "$PERIOD_CYCLE" ] ; then
-  python scripts/generate_training_data.py --traffic_df_filename=$EXP_DIR/sflow-datagrams.hd5 \
+  python scripts/generate_training_data.py --traffic_df_filename=$EXP_DIR/$EXP_FILE \
                                            --output_dir=$EXP_DIR \
                                            --horizon_len=$HORIZON
   INPUT_DIM=1
 
 else
-  python scripts/generate_training_data.py --traffic_df_filename=$EXP_DIR/sflow-datagrams.hd5 \
+  python scripts/generate_training_data.py --traffic_df_filename=$EXP_DIR/$EXP_FILE \
                                            --output_dir=$EXP_DIR \
                                            --horizon_len=$HORIZON \
                                            --period-cycle-seconds=$PERIOD_CYCLE

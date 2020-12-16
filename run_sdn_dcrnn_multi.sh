@@ -13,6 +13,10 @@ if [ -z "$EXP_DATA_PATH" ] ; then
 	exit_with_msg "The variable EXP_DATA_PATH must be set to the storage path containing data directories for analysis!"
 fi
 
+if [ -z "$EXP_FILE" ] ; then
+  exit_with_msg "The variable EXP_FILE must be set to the name of the file containing the experiment HD5!"
+fi
+
 if [ -z "$HORIZON" ] ; then
   exit_with_msg "The variable HORIZON must be set to the amount of datapoints to forecast into the future!"
 fi
