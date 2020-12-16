@@ -26,14 +26,15 @@ fi
 if [ -z "$PERIOD_CYCLE" ] ; then
   python scripts/generate_training_data.py --traffic_df_filename=$EXP_DIR/sflow-datagrams.hd5 \
                                            --output_dir=$EXP_DIR \
-                                           --horizon_len=$HORIZON \
-                                           --period-cycle-seconds=$PERIOD_CYCLE
-  INPUT_DIM=2
+                                           --horizon_len=$HORIZON
+  INPUT_DIM=1
+
 else
   python scripts/generate_training_data.py --traffic_df_filename=$EXP_DIR/sflow-datagrams.hd5 \
                                            --output_dir=$EXP_DIR \
                                            --horizon_len=$HORIZON \
-  INPUT_DIM=1
+                                           --period-cycle-seconds=$PERIOD_CYCLE
+  INPUT_DIM=2
 fi
 # gen_adj_mx + csv ==> adj mx pkl
 LINKS_CSV=`ls $EXP_DIR/*.graphml-topo.csv`
