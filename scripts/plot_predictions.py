@@ -40,6 +40,8 @@ def plot_predictions_vs_ground_truth(nplots, predictions, ground_truth, output_p
     logging.debug("plot_predictions_vs_ground_truth")
     figure, axes = plt.subplots(nrows=ceil(nplots / 4), ncols=4, sharex='all', sharey='all', figsize=(15, 15))
     for i, ax in enumerate(figure.axes):
+        if i == nplots:
+            break
         ax.plot(predictions[i], label='predictions')
         ax.plot(ground_truth[i], label='ground truth')
         ax.set_title('Horizon distance = {}'.format(i))
