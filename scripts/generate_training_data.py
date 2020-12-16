@@ -38,7 +38,7 @@ def generate_graph_seq2seq_io_data(
     data_list = [data]
     if period_cycle_seconds:
         # get the relative time in the cycle as a number
-        time_since_beginning = df.index.values - df.index.values[0]
+        time_since_beginning = df.index.values.astype("datetime64[s]") - df.index.values[0].astype("datetime64[s]")
         time_in_cycle = time_since_beginning / np.timedelta64(period_cycle_seconds, "s")
         time_dimension = np.tile(time_in_cycle, [1, num_nodes, 1]).transpose((2, 1, 0))
         # add as another dimension in each sample
