@@ -188,8 +188,11 @@ if __name__ == '__main__':
 
         logging.debug("Here you can see if all horizons have the same ground truth:")
         for h in horizons:
-            logging.debug(node_ground_truth[h-1][61-h:121-h])
+            logging.debug(node_ground_truth[h-1][:121].sum())
+            logging.debug(len(node_ground_truth[h-1]))
 
+            plot_ground_truth(predictions[node].transpose()[h-1],
+                              pj(args.output_dir, "{0}-node-h{1}-ground-truth-plot.png".format(node, h-1)))
         plot_ground_truth(node_ground_truth[0],
                           pj(args.output_dir, "{0}-node-ground-truth-plot.png".format(node)))
 
