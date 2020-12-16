@@ -65,8 +65,8 @@ def generate_graph_seq2seq_io_data(
 
 def generate_train_val_test(args):
     df = pd.read_hdf(args.traffic_df_filename)
-    if df is not pd.DataFrame:
-        raise RuntimeError("Got an object that isn't a DataFrame from HDF!")
+    if type(df) is not pd.DataFrame:
+        raise RuntimeError("Got an object that isn't a DataFrame (type=%s) from HDF!", type(df))
     # 0 is the latest observed sample.
     x_offsets = np.sort(
         np.concatenate((np.arange(-(args.horizon_len-1), 1, args.horizon_step),))
