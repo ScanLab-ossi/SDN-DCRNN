@@ -30,8 +30,8 @@ def plot_ground_truth(node_ground_truth_data, output_path):
     figure = plt.figure(figsize=(60, 15))
     axes = figure.add_subplot(111)
     axes.plot(node_ground_truth_data, label='ground truth')
-    axes.set_xticks(range(0, len(ground_truth[0]), 50))
-    axes.set_xlim(0, len(ground_truth[0]))
+    axes.set_xticks(range(0, len(node_ground_truth_data), 50))
+    axes.set_xlim(0, len(node_ground_truth_data))
     figure.savefig(output_path, bbox_inches='tight', pad_inches=0)
     plt.close(figure)
 
