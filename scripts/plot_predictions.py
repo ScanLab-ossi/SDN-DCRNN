@@ -32,6 +32,7 @@ def plot_ground_truth(node_ground_truth_data, output_path):
     axes.plot(node_ground_truth_data, label='ground truth')
     axes.set_xticks(range(0, len(node_ground_truth_data), 50))
     axes.set_xlim(0, len(node_ground_truth_data))
+    logging.info("Saving plot to %s", output_path)
     figure.savefig(output_path, bbox_inches='tight', pad_inches=0)
     plt.close(figure)
 
@@ -51,6 +52,7 @@ def plot_predictions_vs_ground_truth(nplots, predictions, ground_truth, output_p
     figure.legend(handles, labels, loc='upper center', fontsize=30)
     figure.text(0.5, 0.04, "Sample Seconds", ha="center", va="center", fontsize=30)
     figure.text(0.04, 0.5, "Prediction vs Truth", ha="center", va="center", rotation=90, fontsize=30)
+    logging.info("Saving plot to %s", output_path)
     figure.savefig(output_path, bbox_inches='tight', pad_inches=0)
     plt.close(figure)
 
@@ -68,6 +70,7 @@ def plot_max_horizon_predictions_vs_ground_truth(max_horizon, predictions, groun
     axes.set_xticks(range(0, len(ground_truth[max_horizon-1]), 50))
     axes.set_xlim(0, len(ground_truth[max_horizon-1]))
     axes.set_ylabel("Prediction vs Truth", fontsize=30)
+    logging.info("Saving plot to %s", output_path)
     figure.savefig(output_path, bbox_inches='tight', pad_inches=0)
     plt.close(figure)
 
@@ -146,6 +149,7 @@ def plot_passing_threshold_recall(thresholds, horizons, horizon_prediction_resul
     axes.set_xlim(0, len(horizons))
     axes.set_ylabel("Thresholds Recall")
     logging.info("Recalls:\nThresholds \\ horizons\n" + str(recall_table))
+    logging.info("Saving plot to %s", output_path)
     figure.savefig(output_path, bbox_inches='tight', pad_inches=0)
     plt.close(figure)
 
