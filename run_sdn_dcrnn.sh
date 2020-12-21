@@ -40,20 +40,21 @@ else
                                            --period-cycle-seconds=$PERIOD_CYCLE
   INPUT_DIM=2
 fi
-# gen_adj_mx + csv ==> adj mx pkl
-LINKS_CSV=`ls $EXP_DIR/*.graphml-topo.csv`
-python scripts/gen_adj_mx.py --links_csv=$LINKS_CSV  --intfs_list=$EXP_DIR/intfs-list
+# gen_adj_mx + json ==> adj_mx.pkl + ports.num
+NETWORK_JSON=$EXP_DIR/network_data.json
+python scripts/gen_adj_mx.py --network-data-json=$NETWORK_JSON
 # gen_config + paths + nodes num ==> config file
-GRAPH_PKL=`ls $EXP_DIR/*.pkl`
-PORT_NUM=`cat $EXP_DIR/*.port.num`
+GRAPH_PKL=$EXP_DIR/adj_mx.pkl
+PORT_NUM=$(cat $EXP_DIR/ports.num)
+CONFIG_FILE=$EXP_DIR/sdn-dcrnn-config.yaml
 python scripts/gen_config.py --dataset_dir=$EXP_DIR \
                              --graph_adj_mx_pkl=$GRAPH_PKL \
                              --num_ports=$PORT_NUM \
                              --horizon=$HORIZON \
                              --seq_len=$SEQ_LEN \
-                             --input-dim=$INPUT_DIM
+                             --input-dim=$INPUT_DIM \
+                             --output-file=$CONFIG_FILE
 # dcrnn_train + config file ==> model
-CONFIG_FILE=`ls $EXP_DIR/*.yaml`
 python dcrnn_train.py --config_file=$CONFIG_FILE
 # run_demo + trained config file ==> new predictions
 PREDICTIONS_FILE=$EXP_DIR/predictions.npz
