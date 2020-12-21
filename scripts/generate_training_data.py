@@ -68,11 +68,9 @@ def generate_train_val_test(args):
     if type(df) is not pd.DataFrame:
         raise RuntimeError("Got an object that isn't a DataFrame (type=%s) from HDF!", type(df))
     # 0 is the latest observed sample.
-    x_offsets = np.sort(
-        np.concatenate((np.arange(-(args.horizon_len-1), 1, args.horizon_step),))
-    )
+    x_offsets = np.arange(-(args.horizon_len-1), 1, args.horizon_step)
     # Predict the next one hour
-    y_offsets = np.sort(np.arange(1, args.horizon_len+1, args.horizon_step))
+    y_offsets = np.arange(1, args.horizon_len+1, args.horizon_step)
     # x: (num_samples, input_length, num_nodes, input_dim)
     # y: (num_samples, output_length, num_nodes, output_dim)
     x, y = generate_graph_seq2seq_io_data(
