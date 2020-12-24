@@ -1,11 +1,15 @@
 import numpy as np
+import sys
 import pandas as pd
-import matplotlib.pylab as plt
 from math import ceil
 import argparse
 import logging
 from os.path import join as pj
 from copy import deepcopy
+import matplotlib
+import matplotlib.pyplot as plt
+
+plt.switch_backend('agg')
 
 
 def parse_args():
@@ -48,7 +52,7 @@ def plot_predictions_vs_ground_truth(nplots, predictions, ground_truth, output_p
         ax.set_title('Horizon distance = {}'.format(i))
         ax.set_xticks(range(0, len(ground_truth[0]), 50))
         ax.set_xlim(0, len(ground_truth[0]))
-    handles, labels = ax.get_legend_handles_labels()
+    handles, labels = figure.axes[0].get_legend_handles_labels()
     figure.legend(handles, labels, loc='upper center', fontsize=30)
     figure.text(0.5, 0.04, "Sample Seconds", ha="center", va="center", fontsize=30)
     figure.text(0.04, 0.5, "Prediction vs Truth", ha="center", va="center", rotation=90, fontsize=30)
@@ -80,21 +84,23 @@ def count_exact_passing_threshold_incidents(horizons, thresholds, node_ground_tr
     passing_threshold_incidents = deepcopy(template)
     max_ground_truth = max(node_ground_truth[0])
     prev_data_point = 0
-    data_counter = 0
+    data_index = 0
     for data_point in node_ground_truth[0]:
+        if data_index + 1 == len(node_ground_truth[0]):
+            break
         for threshold in thresholds:
             threshold_ground_truth = max_ground_truth * threshold
             if data_point >= threshold_ground_truth > prev_data_point:
                 # threshold passed in truth, check if prediction passed too per horizon
                 for horizon in horizons:
-                    predicted_data_point = node_predictions[horizon - 1][data_counter + 1]
-                    prev_predicted_data_point = node_predictions[horizon - 1][data_counter]
+                    predicted_data_point = node_predictions[horizon - 1][data_index + 1]
+                    prev_predicted_data_point = node_predictions[horizon - 1][data_index]
                     if predicted_data_point >= threshold_ground_truth > prev_predicted_data_point:
                         passing_threshold_incidents[horizon][threshold]["true"] += 1
                     else:
                         passing_threshold_incidents[horizon][threshold]["false"] += 1
         prev_data_point = data_point
-        data_counter += 1
+        data_index += 1
     return passing_threshold_incidents
 
 
@@ -104,22 +110,28 @@ def count_relaxed_passing_threshold_incidents(horizons, thresholds, node_ground_
     for horizon in horizons:
         max_ground_truth = max(node_ground_truths[horizon-1])
         prev_data_point = 0
-        data_counter = 0
+        data_index = 0
+        delta = ceil(horizon/2)
+        half_delta = ceil(horizon/4)
         for data_point in node_ground_truths[horizon - 1]:
             for threshold in thresholds:
                 threshold_ground_truth = max_ground_truth * threshold
                 if data_point >= threshold_ground_truth > prev_data_point:
-                    delta = ceil(horizon/2)
-                    half_delta = ceil(horizon/4)
                     # threshold passed in truth, check if prediction passed too
-                    predicted_data_point = node_predictions[horizon-1][data_counter + 1 + delta]
-                    prev_predicted_data_point = node_predictions[horizon-1][data_counter - half_delta]
+                    post_data_point_index = data_index + 1 + delta
+                    if post_data_point_index >= len(node_predictions[horizon-1]):
+                        post_data_point_index = -1
+                    pre_data_point_index = data_index - half_delta
+                    if pre_data_point_index < 0:
+                        pre_data_point_index = 0
+                    predicted_data_point = node_predictions[horizon-1][post_data_point_index]
+                    prev_predicted_data_point = node_predictions[horizon-1][pre_data_point_index]
                     if predicted_data_point >= threshold_ground_truth > prev_predicted_data_point:
                         passing_threshold_incidents[horizon][threshold]["true"] += 1
                     else:
                         passing_threshold_incidents[horizon][threshold]["false"] += 1
             prev_data_point = data_point
-            data_counter += 1
+            data_index += 1
     return passing_threshold_incidents
 
 
@@ -128,10 +140,11 @@ def plot_passing_threshold_recall(thresholds, horizons, horizon_prediction_resul
     logging.info("Calculating and plotting recall, using the following node keys: " + str(node_keys))
     figure = plt.figure()
     axes = figure.add_subplot(211)
-    extracted_horizons = [5, 10, 20, 30, 60]
+    extraction_sequence = [0.25, 0.5, 0.75, 1.0]
+    extracted_horizons = [1] + [int(len(horizons) * i) for i in extraction_sequence]
     recall_table = pd.DataFrame(index=thresholds, columns=extracted_horizons)
     for threshold in thresholds:
-        recalls = []
+        recalls = {}
         for horizon in horizons:
             true = sum([horizon_prediction_results_per_node[n][horizon][threshold]["true"] for n in node_keys])
             false = sum([horizon_prediction_results_per_node[n][horizon][threshold]["false"] for n in node_keys])
@@ -139,9 +152,9 @@ def plot_passing_threshold_recall(thresholds, horizons, horizon_prediction_resul
                 recall = true / (true + false)
             else:
                 recall = 0
-            recalls.append(recall)
-        axes.plot(recalls, label="Threshold = " + str(threshold) + ' Samples = ' + str(true + false))
-        recall_table.loc[threshold] = [recalls[i-1] for i in extracted_horizons]
+            recalls[horizon] = recall
+        axes.plot([recalls[h] for h in sorted(recalls.keys())], label="Threshold = " + str(threshold) + ' Samples = ' + str(true + false))
+        recall_table.loc[threshold] = [recalls[h] for h in extracted_horizons]
     handles, labels = axes.get_legend_handles_labels()
     axes.legend(handles, labels, loc='upper center')
     axes.set_xlabel("Horizons")
@@ -169,12 +182,16 @@ if __name__ == '__main__':
     else:
         logging.getLogger().setLevel(logging.INFO)
 
+    log_handler = logging.StreamHandler(sys.stdout)
+    log_formatter = logging.Formatter('%(asctime)s->%(name)s-%(levelname)s: %(message)s')
+    log_handler.setFormatter(log_formatter)
+    logging.getLogger().addHandler(log_handler)
+
     data_set = np.load(args.predictions_file)
 
     horizons_len = data_set['predictions'].shape[0]
-    logging.info("Will produce %d horizons", horizons_len)
     num_nodes = data_set['predictions'].shape[2]
-    logging.info("Will produce results for %d nodes", num_nodes)
+    logging.info("Will produce results for %d horizons of %d nodes", horizons_len, num_nodes)
 
     predictions = data_set['predictions'].transpose()
     ground_truth = data_set['groundtruth'].transpose()
@@ -196,7 +213,7 @@ if __name__ == '__main__':
             logging.debug(len(node_ground_truth[h-1]))
 
             plot_ground_truth(predictions[node].transpose()[h-1],
-                              pj(args.output_dir, "{0}-node-h{1}-ground-truth-plot.png".format(node, h-1)))
+                              pj(args.output_dir, "{0}-node-h{1}-ground-truth-plot.png".format(node, h)))
         plot_ground_truth(node_ground_truth[0],
                           pj(args.output_dir, "{0}-node-ground-truth-plot.png".format(node)))
 
