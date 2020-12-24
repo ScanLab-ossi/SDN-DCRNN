@@ -42,18 +42,18 @@ else
 fi
 # gen_adj_mx + json ==> adj_mx.pkl + ports.num
 NETWORK_JSON=$EXP_DIR/network_data.json
-python scripts/gen_adj_mx.py --network-data-json=$NETWORK_JSON
-# gen_config + paths + nodes num ==> config file
 GRAPH_PKL=$EXP_DIR/adj_mx.pkl
-PORT_NUM=$(cat $EXP_DIR/ports.num)
+PORTS_NUM=$EXP_DIR/ports.num
+python scripts/gen_adj_mx.py --network-data-json=$NETWORK_JSON --output_pkl_filename=$GRAPH_PKL --output_ports_num_filename=$PORTS_NUM
+# gen_config + paths + nodes num ==> config file
 CONFIG_FILE=$EXP_DIR/sdn-dcrnn-config.yaml
 python scripts/gen_config.py --dataset_dir=$EXP_DIR \
                              --graph_adj_mx_pkl=$GRAPH_PKL \
-                             --num_ports=$PORT_NUM \
+			     --num_ports=$(cat $PORTS_NUM) \
                              --horizon=$HORIZON \
                              --seq_len=$SEQ_LEN \
                              --input-dim=$INPUT_DIM \
-                             --output-file=$CONFIG_FILE
+                             --output-path=$CONFIG_FILE
 # dcrnn_train + config file ==> model
 python dcrnn_train.py --config_file=$CONFIG_FILE
 # run_demo + trained config file ==> new predictions
@@ -63,4 +63,4 @@ python run_demo.py --config_file=$PREDICTIONS_CONFIG_FILE --output_filename=$PRE
 # plot_predictions + predictions ==> plots
 PLOTS_DIR=$EXP_DIR/plots
 mkdir -p $PLOTS_DIR
-python scripts/plot_predictions.py --predictions-file=$PREDICTIONS_FILE --output-dir=$PLOTS_DIR
+python3 scripts/plot_predictions.py --predictions-file=$PREDICTIONS_FILE --output-dir=$PLOTS_DIR

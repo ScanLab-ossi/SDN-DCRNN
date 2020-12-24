@@ -84,7 +84,7 @@ data['model']['horizon'] = args.horizon
 data['model']['seq_len'] = args.seq_len
 data['model']['input_dim'] = args.input_dim
 
-yaml_filename = args.output_file
+yaml_filename = args.output_path
 print('Outputting yaml config to ' + yaml_filename)
 with open(yaml_filename, 'w') as yaml_file:
     yaml.dump(data, yaml_file, default_flow_style=False)
