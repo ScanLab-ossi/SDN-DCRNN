@@ -28,13 +28,13 @@ fi
 
 # generate_training_data + HD5 ==> data npz
 if [ -z "$PERIOD_CYCLE" ] ; then
-  python scripts/generate_training_data.py --traffic_df_filename=$EXP_DIR/$EXP_FILE \
+  python3 scripts/generate_training_data.py --traffic_df_filename=$EXP_DIR/$EXP_FILE \
                                            --output_dir=$EXP_DIR \
                                            --horizon_len=$HORIZON
   INPUT_DIM=1
 
 else
-  python scripts/generate_training_data.py --traffic_df_filename=$EXP_DIR/$EXP_FILE \
+  python3 scripts/generate_training_data.py --traffic_df_filename=$EXP_DIR/$EXP_FILE \
                                            --output_dir=$EXP_DIR \
                                            --horizon_len=$HORIZON \
                                            --period-cycle-seconds=$PERIOD_CYCLE
@@ -44,10 +44,10 @@ fi
 NETWORK_JSON=$EXP_DIR/network_data.json
 GRAPH_PKL=$EXP_DIR/adj_mx.pkl
 PORTS_NUM=$EXP_DIR/ports.num
-python scripts/gen_adj_mx.py --network-data-json=$NETWORK_JSON --output_pkl_filename=$GRAPH_PKL --output_ports_num_filename=$PORTS_NUM
+python3 scripts/gen_adj_mx.py --network-data-json=$NETWORK_JSON --output_pkl_filename=$GRAPH_PKL --output_ports_num_filename=$PORTS_NUM
 # gen_config + paths + nodes num ==> config file
 CONFIG_FILE=$EXP_DIR/sdn-dcrnn-config.yaml
-python scripts/gen_config.py --dataset_dir=$EXP_DIR \
+python3 scripts/gen_config.py --dataset_dir=$EXP_DIR \
                              --graph_adj_mx_pkl=$GRAPH_PKL \
 			     --num_ports=$(cat $PORTS_NUM) \
                              --horizon=$HORIZON \
@@ -55,11 +55,11 @@ python scripts/gen_config.py --dataset_dir=$EXP_DIR \
                              --input-dim=$INPUT_DIM \
                              --output-path=$CONFIG_FILE
 # dcrnn_train + config file ==> model
-python dcrnn_train.py --config_file=$CONFIG_FILE
+python3 dcrnn_train.py --config_file=$CONFIG_FILE
 # run_demo + trained config file ==> new predictions
 PREDICTIONS_FILE=$EXP_DIR/predictions.npz
 PREDICTIONS_CONFIG_FILE=`ls -1t $EXP_DIR/dcrnn*/config*.yaml | head -n 1`
-python run_demo.py --config_file=$PREDICTIONS_CONFIG_FILE --output_filename=$PREDICTIONS_FILE
+python3 run_demo.py --config_file=$PREDICTIONS_CONFIG_FILE --output_filename=$PREDICTIONS_FILE
 # plot_predictions + predictions ==> plots
 PLOTS_DIR=$EXP_DIR/plots
 mkdir -p $PLOTS_DIR
