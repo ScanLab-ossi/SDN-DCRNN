@@ -36,6 +36,9 @@ The variable `HORIZON` must be set to the amount of datapoints to forecast into 
 
 The variable `SEQ_LEN` must be set to the amount of datapoints to be used as input - using the same number as `HORIZON`
 is usually a good way to start
+
+The variable `PERIOD_CYCLE` will be used to decide whether to use [time in experiment modulo period cycle length] as a second input dimension -
+this will usually majorly increase the accuracy of the predictions
 #### Multi-Experiment Run
 We have a helper script to analyze multiple datasets:
 
