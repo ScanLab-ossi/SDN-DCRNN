@@ -65,6 +65,12 @@ In order to compare different results with plots, the following helper scripts w
 `compare_sdn_dcrnn_dataset_results.sh`
 
 Variables `EXP_DATA_PATH`, `HORIZON` must be used as above to indicate the required way you wish to run the comparison
+
+### Baseline Algorithms Calculation
+In order to compare to 3 baseline algorithms (static, historical average, VAR),  with error rates RMSE, MAE, MAPE and checks at horizons 5, 10, 20, 30 run the following:
+
+`python -m scripts.eval_baseline_methods --traffic_reading_filename <path_to_sdnsandbox.hd5> --horizons 5 10 20 30`
+
 #### Troubleshooting
 During training there is a chance that the training loss will explode (become too high and overflow).
 
