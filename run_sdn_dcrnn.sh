@@ -64,3 +64,5 @@ python3 run_demo.py --config_file=$PREDICTIONS_CONFIG_FILE --output_filename=$PR
 PLOTS_DIR=$EXP_DIR/plots
 mkdir -p $PLOTS_DIR
 python3 scripts/plot_predictions.py --predictions-file=$PREDICTIONS_FILE --output-dir=$PLOTS_DIR
+
+tail -n$HORIZON $EXP_DIR/dcrnn_DR*/info.log | cut -d" " -f8- > $EXP_DIR/final_training_error_rates.txt
