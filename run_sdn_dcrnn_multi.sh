@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -xe
 
 exit_with_msg() {
   echo
@@ -25,9 +25,10 @@ if [ -z "$SEQ_LEN" ] ; then
   exit_with_msg "The variable SEQ_LEN must be set to the amount of datapoints to be used as input!"
 fi
 
+PARALLEL_DEFAULT=2
 if [ -z "$PARALLEL" ] ; then
-	PARALLEL=4
-	echo "The variable PARALLEL was not set, default=$PARALLEL will be used for parallelization"
+	echo "The variable PARALLEL was not set, default=$PARALLEL_DEFAULT will be used for parallelization"
+	PARALLEL=$PARALLEL_DEFAULT
 else
 	echo "The variable PARALLEL was set to $PARALLEL and will be used for parallelization"
 fi
