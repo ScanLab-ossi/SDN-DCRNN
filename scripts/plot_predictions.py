@@ -269,3 +269,4 @@ if __name__ == '__main__':
                                   relaxed_passing_threshold_incidents_per_node,
                                   top_third_busy_nodes,
                                   pj(args.output_dir, "top-third-busy-nodes-relaxed-thresholds-recall-plot.png"))
+    logging.info("Completed all plots, saved to %s", args.output_dir)
