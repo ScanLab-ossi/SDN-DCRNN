@@ -11,6 +11,10 @@ def parse_args():
         "-p", "--predictions-file", type=str, default="DCRNN npz file"
     )
     parser.add_argument(
+        "-n", "--plot-nodes", type=int, nargs='+', default=[0],
+        help='Node numbers to plot for.'
+    )
+    parser.add_argument(
         "-o", "--output-dir", type=str, help="Output directory for PNG figures."
     )
     parser.add_argument('--horizons', type=int, nargs='+', default=[7, 30],
@@ -46,6 +50,7 @@ def plot_multi_horizon_predictions_vs_ground_truth(horizons, predictions, ground
     axes.legend(handles, labels, loc='upper center', fontsize=30)
     axes.set_xlabel("Sample Seconds", fontsize=30)
     axes.set_xticks(range(0, plot_len, 300))
+    axes.tick_params(labelsize=30)
     axes.set_xlim(0, plot_len)
     axes.set_ylabel("Prediction vs Truth", fontsize=30)
     figure.savefig(output_path, bbox_inches='tight', pad_inches=0)
@@ -69,7 +74,7 @@ if __name__ == '__main__':
     predictions = data_set['predictions'].transpose()
     ground_truth = data_set['groundtruth'].transpose()
 
-    for node in range(1):
+    for node in args.plot_nodes:
         logging.info("Processing node #" + str(node))
         output_path = pj(args.output_dir, "predictions-vs-ground-truth-node-{}.png".format(node))
         node_ground_truth = ground_truth[node].transpose()
