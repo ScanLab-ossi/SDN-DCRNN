@@ -1,11 +1,15 @@
 import argparse
 import matplotlib.pylab as plt
+from os.path import join as pj
 
 
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "-e", "--error-file", type=str, default="DCRNN final error rates file"
+        "-e", "--error-file", type=str, help="DCRNN final error rates file"
+    )
+    parser.add_argument(
+        "-o", "--output-dir", type=str, default="", help="Output directory for PNG figures."
     )
     parser.add_argument("-n", "--network-name", type=str)
     return parser.parse_args()
@@ -40,5 +44,5 @@ if __name__ == '__main__':
     # axes.set_xticks(range(0, horizons, 50))
     # axes.set_xlim(0, horizons)
     axes.set_ylabel("Error Rates")
-    figure.savefig(args.network_name+"_error_rates.png", bbox_inches='tight', pad_inches=0)
+    figure.savefig(pj(args.output_dir, args.network_name+"_error_rates.png"), bbox_inches='tight', pad_inches=0)
     plt.close(figure)
