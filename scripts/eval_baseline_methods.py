@@ -44,9 +44,9 @@ def eval_exp_smoothing(traffic_reading_df, horizons):
     logger.info('Exp. Smoothing')
     logger.info('Model\tHorizon\tRMSE\tMAPE\tMAE')
     for i, horizon in enumerate(horizons):
-        rmse = masked_rmse_np(preds=y_predicts[i].as_matrix(), labels=y_test.as_matrix(), null_val=0)
-        mape = masked_mape_np(preds=y_predicts[i].as_matrix(), labels=y_test.as_matrix(), null_val=0)
-        mae = masked_mae_np(preds=y_predicts[i].as_matrix(), labels=y_test.as_matrix(), null_val=0)
+        rmse = masked_rmse_np(preds=y_predicts[i].values(), labels=y_test.values(), null_val=0)
+        mape = masked_mape_np(preds=y_predicts[i].values(), labels=y_test.values(), null_val=0)
+        mae = masked_mae_np(preds=y_predicts[i].values(), labels=y_test.values(), null_val=0)
         line = 'Exp. Smoothing\t%d\t%.2f\t%.2f\t%.2f' % (horizon, rmse, mape * 100, mae)
         logger.info(line)
     plot_eval_first_node_at_max_horizon("ExponentialSmoothing", horizons, y_predicts, y_test)
