@@ -30,11 +30,13 @@ def exp_smoothing_predict(df, n_forwards=(1, 3), test_ratio=0.2):
     # Do forecasting.
     result = np.zeros(shape=(n_test, n_output))
     for i in range(n_output):
-        exp_s_model = ExponentialSmoothing(df_train.iloc[i].values)
+        exp_s_model = ExponentialSmoothing(df_train.transpose().iloc[i].values)
         exp_s_result = exp_s_model.fit()
+        if not exp_s_result.mle_retvals.success:
+            logger.warn(f"for iteration {i} got mle {exp_s_result.mle_retvals}")
         result[:, i] = exp_s_result.forecast(n_test)
 
-    df_predicts = result * len(n_forwards)
+    df_predicts = [result] * len(n_forwards)
 
     return df_predicts, df_test
 
@@ -44,12 +46,12 @@ def eval_exp_smoothing(traffic_reading_df, horizons):
     logger.info('Exp. Smoothing')
     logger.info('Model\tHorizon\tRMSE\tMAPE\tMAE')
     for i, horizon in enumerate(horizons):
-        rmse = masked_rmse_np(preds=y_predicts[i].values(), labels=y_test.values(), null_val=0)
-        mape = masked_mape_np(preds=y_predicts[i].values(), labels=y_test.values(), null_val=0)
-        mae = masked_mae_np(preds=y_predicts[i].values(), labels=y_test.values(), null_val=0)
+        rmse = masked_rmse_np(preds=y_predicts[i], labels=y_test.values, null_val=0)
+        mape = masked_mape_np(preds=y_predicts[i], labels=y_test.values, null_val=0)
+        mae = masked_mae_np(preds=y_predicts[i], labels=y_test.values, null_val=0)
         line = 'Exp. Smoothing\t%d\t%.2f\t%.2f\t%.2f' % (horizon, rmse, mape * 100, mae)
         logger.info(line)
-    plot_eval_first_node_at_max_horizon("ExponentialSmoothing", horizons, y_predicts, y_test)
+    plot_eval_preds_vs_test("ExponentialSmoothing", y_predicts[-1][:, 0], y_test.transpose().iloc[0].values)
 
 
 def var_predict(df, n_forwards=(1, 3), n_lags=4, test_ratio=0.2):
@@ -100,17 +102,19 @@ def eval_var(traffic_reading_df, horizons, n_lags=3):
         mae = masked_mae_np(preds=y_predicts[i].values, labels=y_test.values, null_val=0)
         line = 'VAR\t%d\t%.2f\t%.2f\t%.2f' % (horizon, rmse, mape * 100, mae)
         logger.info(line)
-    plot_eval_first_node_at_max_horizon("VAR", horizons, y_predicts, y_test)
+    plot_eval_preds_vs_test("VAR", y_predicts[-1].transpose().iloc[0], y_test.transpose().iloc[0])
 
 
-def plot_eval_first_node_at_max_horizon(eval_method_name, horizons, y_predicts, y_test):
+def plot_eval_preds_vs_test(eval_method_name, y_predicts, y_test):
+    logger.info(f"len preds {len(y_predicts)} len test {len(y_test)}")
     figure = plt.figure(figsize=(60, 15))
     axes = figure.add_subplot(111)
-    axes.plot(y_predicts[max(horizons)].iloc[0], label=f"{eval_method_name} prediction max horizon")
-    axes.plot(y_test.iloc[0], label="Real Data")
+    axes.plot(y_test, label="Real Data")
+    axes.plot(y_predicts, label=f"{eval_method_name} prediction max horizon")
     axes.set_title(f'{eval_method_name} Prediction at max horizon', fontsize=30)
     axes.set_xlabel("Prediction Time [sec]", fontsize=30)
     axes.set_ylabel("Predicted vs Real Rates", fontsize=30)
+    axes.legend()
     figure.savefig(f"{eval_method_name}_prediction.png", bbox_inches='tight', pad_inches=0)
     plt.close(figure)
 
