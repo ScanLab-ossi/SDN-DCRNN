@@ -80,12 +80,12 @@ Another solution can be to decrease the learning rate earlier in the learning ra
 
 ## Citation
 If you find this repository useful in your research, please cite the following papers:
-####TODO: Add new SDN related citation
+### TODO: Add new SDN related citation
 ```
 @inproceedings{}
 ```
 
-####The original paper
+### The original paper
 ```
 @inproceedings{li2018dcrnn_traffic,
   title={Diffusion Convolutional Recurrent Neural Network: Data-Driven Traffic Forecasting},
