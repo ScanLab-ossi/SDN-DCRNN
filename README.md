@@ -18,7 +18,7 @@ pip install -r requirements.txt
 If this is an issue (to do with python package management), you can use a virtualenv python environment.
 ## Dataset Preparation
 We assume the data format used is a folder of an experiment simulated using
-[SDNSandbox](https://www.github.com/yossisolomon/SDNSandbox "SDNSanbox's Github page") - an SDN testbed for researchers.
+[SDNSandbox](https://www.github.com/ScanLab-ossi/SDNSandbox "SDNSanbox's Github page") - an SDN testbed for researchers.
 
 The main inputs from the experiment folder are:
 * The sFlow monitoring datagrams HD5 file `sflow-datagrams.hd5`
@@ -78,11 +78,30 @@ A workaround we used is to lower the used measurement unit (e.g. Mbps instead of
 
 Another solution can be to decrease the learning rate earlier in the learning rate schedule. 
 
+## Our Datasets
+Our datasets were generated using SDNSandbox for the following network topologies:
+
+
+We created one for the identical load configuration and another for the shifted load one.
+All configurations and logs are included in the dataset.
+
+* [Identical load dataset](https://www.kaggle.com/datasets/yossisolomon/sdnsandbox-identical-load)
+* [Shifted load dataset](https://www.kaggle.com/datasets/yossisolomon/sdnsandbox-shifted-load)
+
 ## Citation
 If you find this repository useful in your research, please cite the following papers:
-### TODO: Add new SDN related citation
+
 ```
-@inproceedings{}
+@article{SOLOMON2022109446,
+title = {SDNSandbox — Enabling learning-based innovation in provider networks},
+journal = {Computer Networks},
+volume = {219},
+pages = {109446},
+year = {2022},
+issn = {1389-1286},
+doi = {https://doi.org/10.1016/j.comnet.2022.109446},
+url = {https://www.sciencedirect.com/science/article/pii/S1389128622004807},
+author = {Yossi Solomon and Osnat Mokryn and Tsvi Kuflik}}
 ```
 
 ### The original paper
