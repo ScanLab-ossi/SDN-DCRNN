@@ -80,7 +80,10 @@ Another solution can be to decrease the learning rate earlier in the learning ra
 
 ## Our Datasets
 Our datasets were generated using SDNSandbox for the following network topologies:
-
+* Agis - national USA network
+* Bellsouth - regional southern USA
+* Tw - national USA network
+* Deltacom - regional eastern USA seaboard
 
 We created one for the identical load configuration and another for the shifted load one.
 All configurations and logs are included in the dataset.
